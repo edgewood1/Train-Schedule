@@ -75,20 +75,27 @@ $("#submit-btn").on("click", function(event) {
   destination = $("#destination").val().trim();
   firstArrival = $("#time").val().trim();
   frequency = $("#frequency").val().trim();
+  frequency = parseInt(frequency);
 
   firstTime=moment(firstArrival, "hh:mm").subtract(1, "years");
+  console.log(moment(firstTime).format("hh:mm"));
    currentTime=moment();
+   console.log("moment: " + moment(currentTime));
    diffTime=moment().diff(moment(firstTime), "minutes");
+   console.log("difference: " + diffTime);
    tRemainder=diffTime%frequency;
+   console.log("remainder: " + tRemainder);
    tMinutes=frequency-tRemainder;
+   console.log("tMinutes: " + tMinutes);
    nextTrain=moment().add(tMinutes, "minutes");
+   console.log("next Train  " + moment(nextTrain).format("hh:mm"));
 
   
   database.ref().push({
     
     name: name,
     destination: destination,
-    nextTrain: nextTrain,
+    nextTrain: moment(nextTrain).format("hh:mm"),
     frequency: frequency,
     tMinutes: tMinutes
 
