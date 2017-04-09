@@ -13,14 +13,30 @@ var database = firebase.database();
 
 var name;
 var destination;
-var time;
+var firstArrival;
 var frequency;
 var movies=[];
 var markup;
-
+var currentTime;
+  var timeDifference; 
+  var addTime;
+var interval;  
+var firstTime;
+var currentTime;
+var diffTime;
+var tRemainder;
+var tMinutes;
+var nextTrain;
 // Read 
 
-database.ref().limitToLast(2).on("child_added", function(snapshot) {
+var d = new Date(); // for now
+console.log(d);
+var h=d.getHours(); // => 9
+var m=d.getMinutes(); // =>  30
+var s=d.getSeconds(); // => 51
+
+
+database.ref().limitToLast(5).on("child_added", function(snapshot) {
 
   //make sure that there's something in the database if you're going to read it 
   var exists = snapshot.exists();
@@ -37,13 +53,14 @@ database.ref().limitToLast(2).on("child_added", function(snapshot) {
       "</td><td>" + 
       movies[i].frequency + 
       "</td></tr>"+
-      movies[i].time + 
-      "</td></tr>"
+      movies[i].nextTrain + 
+      "</td></tr>+"
+       movies[i].tMinutes + 
+      "</td></tr>+"
       ;
+      }
 //#data-table is an empty <tbody> tag that is filled in
       $("#data-table").append(markup);
-      }
-
 }
 });
 
@@ -56,17 +73,25 @@ $("#submit-btn").on("click", function(event) {
 
   name = $("#name").val().trim();
   destination = $("#destination").val().trim();
-  time = $("#time").val().trim();
+  firstArrival = $("#time").val().trim();
   frequency = $("#frequency").val().trim();
 
-  //save to database -  
+  firstTime=moment(firstArrival, "hh:mm").subtract(1, "years");
+   currentTime=moment();
+   diffTime=moment().diff(moment(firstTime), "minutes");
+   tRemainder=diffTime%frequency;
+   tMinutes=frequency-tRemainder;
+   nextTrain=moment().add(tMinutes, "minutes");
+
   
   database.ref().push({
     
     name: name,
     destination: destination,
-    time: time,
+    nextTrain: nextTrain,
     frequency: frequency,
+    tMinutes: tMinutes
+
 
   });  
 
